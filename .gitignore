@@ -1,0 +1,5 @@
+albums
+*.sh
+
+.idea
+.vscode
