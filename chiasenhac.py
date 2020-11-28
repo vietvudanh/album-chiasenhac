@@ -18,6 +18,7 @@ optional arguments:
   --output OUTPUT_DIR, -o OUTPUT_DIR
                         output folder
 """
+import os
 import argparse
 import logging
 import time
@@ -39,24 +40,32 @@ def download_file(params: tuple):
     filename = down_soup.title.text.split('Download: ')[-1].split(" - ")[0] + "." + quality
     filename = filename.replace(u'Tải nhạc ', '')
 
-    path = Path(album_path) / filename
-    if path.exists():
-        logging.info("file %s exists", filename)
-        return
-
     start_time = time.time()
     logging.info("start: %s", filename)
     size = 0
     href = ""
-    for link in down_soup.find_all('a'):
+    all_hrefs = list(down_soup.find_all('a'))
+    for link in all_hrefs:
         href = link.get('href')
         if href \
-                and href.find('.' + quality) > 0 \
+                and href.find('downloads') > 0 \
                 and href.find(quality) > 0:
-            with path.open('wb') as f:
+            splits_dot = href.split(".")
+            org_ext = splits_dot[-1] if len(splits_dot) > 1 else 'mp3'
+            filename = filename + f'.{org_ext}'
+
+            write_path = Path(album_path) / filename
+            if write_path.exists():
+                logging.warn("file %s exists. overwrite.", filename)
+
+            with write_path.open('wb') as f:
                 content = ss.get(href).content
                 size = f.write(content)
             break
+    else:
+        logging.error("cannot get href for url=%s", url)
+        return
+
     logging.info("done : %s:: took=%fs, href=%s, bytes=%d", filename, (time.time() - start_time), href, size)
 
 
@@ -142,10 +151,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='download album from chiasenhac.vn')
     parser.add_argument('--url', '-u', dest='url', type=str, required=True,
                         help='url of the album')
-    parser.add_argument('--username', '-U', dest='username', type=str, required=True,
-                        help='username to login')
-    parser.add_argument('--password', '-p', dest='password', type=str, required=True,
-                        help='password to login')
+    parser.add_argument('--username', '-U', dest='username', type=str,
+                        help='username to login', default=os.getenv('CSN_USERNAME', None))
+    parser.add_argument('--password', '-p', dest='password', type=str,
+                        help='password to login', default=os.getenv('CSN_PASSWORD', None))
     parser.add_argument('--quality', '-q', dest='quality', type=str, default='320',
                         help='music quality, 128/320/m4a/flac')
     parser.add_argument('--threads', '-t', dest='num_threads', type=int, default=8,
