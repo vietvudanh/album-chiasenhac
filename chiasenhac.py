@@ -27,6 +27,14 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+load_dotenv()
+
+extra_kwargs = {}
+extra_kwargs_text = os.environ.get("REQUESTS_EXTRA_KWARGS", None)
+if extra_kwargs_text is not None and extra_kwargs_text != '':
+    import json
+    extra_kwargs = json.loads(extra_kwargs_text)
 
 
 def download_file(params: tuple):
@@ -35,7 +43,7 @@ def download_file(params: tuple):
     if ss is None:
         ss = requests
 
-    down_page = ss.get(url).text
+    down_page = ss.get(url, **extra_kwargs).text
     down_soup = BeautifulSoup(down_page, 'html.parser')
     filename = down_soup.title.text.split('Download: ')[-1].split(" - ")[0] + "." + quality
     filename = filename.replace(u'Tải nhạc ', '')
@@ -59,7 +67,7 @@ def download_file(params: tuple):
                 logging.warn("file %s exists. overwrite.", filename)
 
             with write_path.open('wb') as f:
-                content = ss.get(href).content
+                content = ss.get(href, **extra_kwargs).content
                 size = f.write(content)
             break
     else:
@@ -75,7 +83,8 @@ def main(args: argparse.Namespace):
     res_init = session.get("https://chiasenhac.vn/",
                            headers={
                                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0',
-                           })
+                           },
+                           **extra_kwargs)
     text = res_init.text
     soup = BeautifulSoup(text, 'html.parser')
 
@@ -98,7 +107,8 @@ def main(args: argparse.Namespace):
             "email": args.username,
             "password": args.password,
             "remember": "true"
-        })
+        },
+        **extra_kwargs)
     if res_login.ok \
             and res_login.status_code == 200 \
             and res_login.json().get('success'):
@@ -108,7 +118,7 @@ def main(args: argparse.Namespace):
         logging.error(res_login.text)
         return
 
-    org_page = session.get(args.url).text
+    org_page = session.get(args.url, **extra_kwargs).text
     org_soup = BeautifulSoup(org_page, 'html.parser')
 
     list_url = set()  # link might appear twice, so use set
