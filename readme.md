@@ -2,7 +2,9 @@
 
 Need login to download musuc quality > 128Kbps. Who listen to lower quality these days anyway?
 
-Set env `USERNAME`, `PASSWORD` or passing as args
+Set env `CSN_USERNAME`, `CS_PASSWORD` or passing as args
+
+Set optional `REQUESTS_EXTRA_KWARGS` if needed (e.g: proxies, skip ssl verify...)
 
 ```
 usage: chiasenhac.py [-h] --url URL --username USERNAME --password PASSWORD [--quality QUALITY] [--threads NUM_THREADS] [--output OUTPUT_DIR]
