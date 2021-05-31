@@ -1,6 +1,6 @@
 # download album from chiasenhac.vn
 
-Need login to download musuc quality > 128Kbps. Who listen to lower quality these days anyway?
+Need login to download music quality > 128Kbps. Who listen to lower quality these days anyway?
 
 Set env `CSN_USERNAME`, `CS_PASSWORD` or passing as args
 
