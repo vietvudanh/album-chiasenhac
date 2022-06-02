@@ -56,7 +56,7 @@ def download_file(params: tuple):
     for link in all_hrefs:
         href = link.get('href')
         if href \
-                and href.find('downloads') > 0 \
+                and href.find('down2') > 0 \
                 and href.find(quality) > 0:
             splits_dot = href.split(".")
             org_ext = splits_dot[-1] if len(splits_dot) > 1 else 'mp3'
@@ -64,7 +64,7 @@ def download_file(params: tuple):
 
             write_path = Path(album_path) / filename
             if write_path.exists():
-                logging.warn("file %s exists. overwrite.", filename)
+                logging.warning("file %s exists. overwrite.", filename)
 
             with write_path.open('wb') as f:
                 content = ss.get(href, **extra_kwargs).content
