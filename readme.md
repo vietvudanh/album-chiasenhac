@@ -1,6 +1,6 @@
 # UPDATE  on Feb 23th 2023
 
-Looks like [chiasenhac.vn](http://chiasenhac.vn) is down, it's good while it lasts!
+Looks like [chiasenhac.vn](http://chiasenhac.vn) is down, it's good while it lasted!
 
 # download album from chiasenhac.vn
 
